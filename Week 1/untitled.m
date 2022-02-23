@@ -10,6 +10,7 @@ car1Tr = se2(300, 550);
 car1Tr_h = trplot2(car1Tr, 'frame', '1', 'color', 'b','length',50);
 hold on;
 circ = pi*460;
+
 moveincr = circ/360;
 turnincr = -2*pi/360;
 
