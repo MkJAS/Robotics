@@ -75,13 +75,11 @@ for i=1:8
       hold on;
       
       q = rotm2quat(P2(1:3,1:3));
-      q(1,:)
       
-      try delete(texts); end;
-       try delete(tranimate); end;
+      
       message = sprintf([num2str(round(q(1,:),2,'significant')),'\n' ...
-                      ,num2str(roll),' ',num2str(pitch),' ',num2str(yaw)]);
-      texts = text(1, 10, message, 'FontSize', 10, 'Color', [.6 .2 .6]);
+                      ,num2str(roll),num2str(pitch),num2str(yaw)]);
+      texts = text(10, 50, message, 'FontSize', 10, 'Color', [.6 .2 .6]);
       drawnow();
       tranimate(P1,P2,'fps',30);
       
