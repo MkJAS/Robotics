@@ -68,6 +68,7 @@ methods (Static)
         axis equal;
         grid on;
         pause
+        
         % Incrementing by 1 deg 
         for i=1:90
             try delete(R_h); end
