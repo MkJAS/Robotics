@@ -120,8 +120,32 @@ for i = -pi/4:0.01:pi/4
     drawnow();
     pause(0.01);
 end
+%%
+close all
+clear all
 
+mdl_puma560
 
+T1 = transl(0.5,-0.4,0.5);
+q1 = p560.ikine(T1);
+
+T2 = transl(0.5,0.4,0.1);
+q2 = p560.ikine(T2); 
+
+steps = 50;
+
+qMatrix = jtraj(q1,q2,steps);
+
+figure(1)
+p560.plot(qMatrix,'trail','r-')
+
+s = lspb(0,1,steps);
+qMatrix = nan(steps,6);
+for i = 1:steps
+   qMatrix(i,:) = (1-s(i))*q1 + s(i)*q2;
+end
+figure(1)
+p560.plot(qMatrix,'trail','r-')
 
 
 
