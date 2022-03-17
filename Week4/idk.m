@@ -103,8 +103,8 @@ mdl_planar3
 hold on
 p3.plot([0,0,0])
 p3.delay = 0;
-ppos = p3.fkine([0 0 0])
-pXYZ = ppos(1:3,4);
+% ppos = p3.fkine([0 0 0])
+% pXYZ = ppos(1:3,4);
 
 axis([-3,3,-3,3,-0.5,8])
 %%
@@ -112,9 +112,9 @@ axis([-3,3,-3,3,-0.5,8])
 for i = -pi/4:0.01:pi/4
     p3.animate([i,i,i])
     tr = p3.fkine([i,i,i]);
-    XYZ = tr(1:3,4);
-    Line = plot3([pXYZ(1,1),XYZ(1,1)],[pXYZ(2,1),XYZ(2,1)],[pXYZ(3,1),XYZ(3,1)],'-b');
-    pXYZ = XYZ;
+%     XYZ = tr(1:3,4);
+%     Line = plot3([pXYZ(1,1),XYZ(1,1)],[pXYZ(2,1),XYZ(2,1)],[pXYZ(3,1),XYZ(3,1)],'-b');
+%     pXYZ = XYZ;
     transformedVertices = [vertices,ones(size(vertices,1),1)] * tr';
     set(mesh_h,'Vertices',transformedVertices(:,1:3));
     drawnow();

@@ -1,5 +1,6 @@
 close all
 clear all
+load('brick.mat')
 
 base1 = transl(-1, 0, 0);
 base2 = transl(1, 0, 0);
@@ -44,30 +45,30 @@ for i = 2:steps
    acceleration(i,:) = velocity(i,:) - velocity(i-1,:);
 end
 
-for i = 1:6
-   figure(2)
-   subplot(3,2,i)
-   plot(qMatrix(:,i),'k','LineWidth',1)
-   title(['Joint ', num2str(i)])
-   xlabel('Step')
-   ylabel('Joint Angle (rad)')
-   refline(0,robot.model.qlim(i,1)) % Reference line on the lower joint limit for joint i
-   refline(0,robot.model.qlim(i,2)) % Reference line on the upper joint limit for joint i
-
-   figure(3)
-   subplot(3,2,i)
-   plot(velocity(:,i),'k','LineWidth',1)
-   title(['Joint ', num2str(i)])
-   xlabel('Step')
-   ylabel('Joint Velocity')
- 
-   figure(4)
-   subplot(3,2,i)
-   plot(acceleration(:,i),'k','LineWidth',1)
-   title(['Joint ', num2str(i)])
-   xlabel('Step')
-   ylabel('Joint Acceleration')
- end
+% for i = 1:6
+%    figure(2)
+%    subplot(3,2,i)
+%    plot(qMatrix(:,i),'k','LineWidth',1)
+%    title(['Joint ', num2str(i)])
+%    xlabel('Step')
+%    ylabel('Joint Angle (rad)')
+%    refline(0,robot.model.qlim(i,1)) % Reference line on the lower joint limit for joint i
+%    refline(0,robot.model.qlim(i,2)) % Reference line on the upper joint limit for joint i
+% 
+%    figure(3)
+%    subplot(3,2,i)
+%    plot(velocity(:,i),'k','LineWidth',1)
+%    title(['Joint ', num2str(i)])
+%    xlabel('Step')
+%    ylabel('Joint Velocity')
+%  
+%    figure(4)
+%    subplot(3,2,i)
+%    plot(acceleration(:,i),'k','LineWidth',1)
+%    title(['Joint ', num2str(i)])
+%    xlabel('Step')
+%    ylabel('Joint Acceleration')
+%  end
 %%
 
 % Q = robot.model.ikine(transl(-0.8,0.1,0),Q,[1,1,1,0,0,0]);
@@ -113,7 +114,5 @@ end
 
 plot3(XYplane(1,:),XYplane(2,:),XYplane(3,:));
 plot3(XZplane(1,:),XZplane(2,:),XZplane(3,:));
-
-
 
 
