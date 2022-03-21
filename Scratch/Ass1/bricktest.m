@@ -150,18 +150,41 @@ theta = atan((A(2)-point(2))/(A(1)-point(1)))
 
 r = ((base1(1)-XYplane(1,1))^2 + (base1(2)-XYplane(2,1))^2)^0.5 %radius around UR3
 
-x = r*0.8*cos(theta)+A(1) %distance from UR3 to 0.8r
-y = r*0.8*sin(theta)+A(2)
+x1 = r*0.8*cos(theta)+A(1) %distance from UR3 to 0.8r
+y1 = r*0.8*sin(theta)+A(2)
 
 
 plot([A(1), B(1)], [A(2), B(2)], 'r');
 % axis([-5 5 -5 5]);
 hold on
 plot([midV(1), midV(1) + normal(1)], [midV(2), midV(2) + normal(2)], 'g');
-plot([A(1), x], [A(2), y], 'b');
+plot([A(1), x1], [A(2), y1], 'b');
 
-m = B(2)-A(2)/A(1)-B(1);
+m = (B(2)-A(2))/(A(1)-B(1))
 
+d = r*0.8 - brick.x/2
+
+
+x = (d^2/(1+m^2))^0.5 + x1
+if abs(m) == inf
+    if base1(2) > base2(2)
+        y = d + base1(2)
+    
+    else
+        y = -d + base1(2)
+    end
+elseif m == 0
+        y = y1;
+        if base1(1) < base2(1)
+            x =  base1(1) - d
+        end    
+else
+    y = (d^2-x^2)^0.5
+    
+end
+
+
+plot([x1 x],[y1 y])
 
 % m = 2.3;          %get a point (x,y) at a distance of d from another
 %                       point (x1,y1) given a known gradient m
@@ -197,12 +220,12 @@ for i=1:steps
     robot1.model.animate(q1Matrix(i,:));
     pause(0.1)
 end
-
+%%
 
 q1r1 = q2r1;
-brick1drop = transl(-0.4,0.5,brick.z)*troty(pi);
+brick1drop = transl(x,y,brick.z)*troty(pi);
 T4 = brick1drop;
-q2r1 = robot1.model.ikcon(T4);
+q2r1 = robot1.model.ikcon(T4,qt);
 for i = 1:steps
    q1Matrix(i,:) = (1-s(i))*q1r1 + s(i)*q2r1;
 end
@@ -213,13 +236,13 @@ for i=1:steps
     robot1.model.animate(q1Matrix(i,:));
     tr = robot1.model.fkine(q1Matrix(i,:)); %* transl(0,0,0.08); %transl because the end of the effector is for some reason not where the visual end is???
     transformedVertices = [vertices{1,1},ones(size(vertices{1,1},1),1)] * tr';
-    set(Bricks{9,1},'Vertices',transformedVertices(:,1:3));
+    set(Bricks{UR3bricks(1,1),1},'Vertices',transformedVertices(:,1:3));
     drawnow();
     pause(0.1)
 end
 %'Drop' brick
 transformedVertices = [vertices{1,1},ones(size(vertices{1,1},1),1)] * transl(brick1drop(1,4),brick1drop(2,4),0)';
-set(Bricks{9,1},'Vertices',transformedVertices(:,1:3));
+set(Bricks{UR3bricks(1,1),1},'Vertices',transformedVertices(:,1:3));
 drawnow();
 %%
 
