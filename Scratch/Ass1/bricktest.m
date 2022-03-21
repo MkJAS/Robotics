@@ -168,15 +168,17 @@ d = r*0.8 - brick.x/2
 x = (d^2/(1+m^2))^0.5 + x1
 if abs(m) == inf
     if base1(2) > base2(2)
-        y = d + base1(2)
+        y = base1(2) - d
     
     else
-        y = -d + base1(2)
+        y = base1(2) + d
     end
 elseif m == 0
         y = y1;
         if base1(1) < base2(1)
-            x =  base1(1) - d
+            x =  base1(1) + d
+        else
+            x = base1(1) - d
         end    
 else
     y = (d^2-x^2)^0.5
@@ -223,9 +225,9 @@ end
 %%
 
 q1r1 = q2r1;
-brick1drop = transl(x,y,brick.z)*troty(pi);
+brick1drop = transl(x1,y1,brick.z)*troty(pi);
 T4 = brick1drop;
-q2r1 = robot1.model.ikcon(T4,qt);
+q2r1 = robot1.model.ikcon(T4);
 for i = 1:steps
    q1Matrix(i,:) = (1-s(i))*q1r1 + s(i)*q2r1;
 end
