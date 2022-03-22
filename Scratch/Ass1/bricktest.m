@@ -204,7 +204,8 @@ plot([x1 x],[y1 y])
 % axis([0 6 0 6])
 % hold on
 % plot([x1 x],[y1 y])
-
+%
+%
 
 %% Move brick to end goal
 
@@ -223,9 +224,15 @@ for i=1:steps
     pause(0.1)
 end
 %%
-
+if abs(m) == inf
+    brickrot = trotz(pi/2);
+elseif m == 0
+    brickrot = 1;
+else
+    brickrot = trotz(-atan(m));
+end
 q1r1 = q2r1;
-brick1drop = transl(x1,y1,brick.z)*troty(pi) * trotz(pi/2);
+brick1drop = transl(x1,y1,brick.z)*troty(pi) * brickrot;
 T4 = brick1drop;
 q2r1 = robot1.model.ikcon(T4,qt);
 for i = 1:steps
