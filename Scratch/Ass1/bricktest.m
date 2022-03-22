@@ -150,8 +150,8 @@ theta = atan((A(2)-point(2))/(A(1)-point(1)))
 
 r = ((base1(1)-XYplane(1,1))^2 + (base1(2)-XYplane(2,1))^2)^0.5 %radius around UR3
 
-x1 = r*0.8*cos(theta)+A(1) %distance from UR3 to 0.8r
-y1 = r*0.8*sin(theta)+A(2)
+x1 = r*0.6*cos(theta)+A(1) %distance from UR3 to 0.8r
+y1 = r*0.6*sin(theta)+A(2)
 
 
 plot([A(1), B(1)], [A(2), B(2)], 'r');
@@ -225,14 +225,14 @@ end
 %%
 
 q1r1 = q2r1;
-brick1drop = transl(x1,y1,brick.z)*troty(pi);
+brick1drop = transl(x1,y1,brick.z)*troty(pi) * trotz(pi/2);
 T4 = brick1drop;
-q2r1 = robot1.model.ikcon(T4);
+q2r1 = robot1.model.ikcon(T4,qt);
 for i = 1:steps
    q1Matrix(i,:) = (1-s(i))*q1r1 + s(i)*q2r1;
 end
-    transformedVertices = [vertices{1,1},ones(size(vertices{1,1},1),1)] * trotz(pi/2)';
-    set(Bricks{9,1},'Vertices',transformedVertices(:,1:3));
+%     transformedVertices = [vertices{1,1},ones(size(vertices{1,1},1),1)] * trotz(pi/2)';
+%     set(Bricks{UR3bricks(1,1),1},'Vertices',transformedVertices(:,1:3));
 %Animate movement along side brick animation
 for i=1:steps
     robot1.model.animate(q1Matrix(i,:));
@@ -243,7 +243,8 @@ for i=1:steps
     pause(0.1)
 end
 %'Drop' brick
-transformedVertices = [vertices{1,1},ones(size(vertices{1,1},1),1)] * transl(brick1drop(1,4),brick1drop(2,4),0)';
+tr(3,4) = brick.z;
+transformedVertices = [vertices{1,1},ones(size(vertices{1,1},1),1)] * tr';%transl(brick1drop(1,4),brick1drop(2,4),0)';
 set(Bricks{UR3bricks(1,1),1},'Vertices',transformedVertices(:,1:3));
 drawnow();
 %%
