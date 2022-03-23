@@ -150,8 +150,8 @@ theta = atan((A(2)-point(2))/(A(1)-point(1)))
 
 r = ((base1(1)-XYplane(1,1))^2 + (base1(2)-XYplane(2,1))^2)^0.5 %radius around UR3
 
-x1 = r*0.6*cos(theta)+A(1) %distance from UR3 to 0.8r
-y1 = r*0.6*sin(theta)+A(2)
+x1 = r*cos(theta)+A(1) %distance from UR3 to 0.8r
+y1 = r*sin(theta)+A(2)
 
 
 plot([A(1), B(1)], [A(2), B(2)], 'r');
@@ -168,10 +168,10 @@ d = r*0.8 - brick.x/2
 x = (d^2/(1+m^2))^0.5 + x1
 if abs(m) == inf
     if base1(2) > base2(2)
-        y = base1(2) - d
+        y = base1(2) + d
     
     else
-        y = base1(2) + d
+        y = base1(2) - d
     end
 elseif m == 0
         y = y1;
@@ -232,9 +232,9 @@ else
     brickrot = trotz(-atan(m));
 end
 q1r1 = q2r1;
-brick1drop = transl(x1,y1,brick.z)*troty(pi) * brickrot;
+brick1drop = transl(x1,y1,brick.z)*troty(pi);
 T4 = brick1drop;
-q2r1 = robot1.model.ikcon(T4,qt);
+q2r1 = robot1.model.ikcon(T4,q);
 for i = 1:steps
    q1Matrix(i,:) = (1-s(i))*q1r1 + s(i)*q2r1;
 end
