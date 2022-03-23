@@ -1,4 +1,4 @@
-function MovetoBrick(robot1,robot2,UR3bricks,UR5bricks,getbrickcoord)
+function MovetoPoint(robot1,robot2,point1,point2)
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
     steps = 50;
@@ -9,10 +9,10 @@ function MovetoBrick(robot1,robot2,UR3bricks,UR5bricks,getbrickcoord)
     q1r1 = robot1.model.getpos();
     q1r2 = robot2.model.getpos();
 
-    T2 = transl(getbrickcoord{1,UR3bricks(1,1)}.x,getbrickcoord{1,UR3bricks(1,1)}.y,getbrickcoord{1,UR3bricks(1,1)}.z+0.2)*troty(pi);
-    q2r1 = robot1.model.ikcon(T2);
-    T22 = transl(getbrickcoord{1,UR5bricks(1,1)}.x,getbrickcoord{1,UR5bricks(1,1)}.y,getbrickcoord{1,UR5bricks(1,1)}.z+0.2)*troty(pi);
-    q2r2 = robot2.model.ikcon(T22);
+
+    q2r1 = robot1.model.ikcon(point1,q1r1);
+
+    q2r2 = robot2.model.ikcon(point2,q1r2);
 
 
     for i = 1:steps
