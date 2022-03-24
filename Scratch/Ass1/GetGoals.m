@@ -23,7 +23,7 @@ function [wallgoals,m] = GetGoals(base1,base2,r,brick)
     %get a point (x,y) at a distance of d from another
     %point (x1,y1) given a known gradient m = atan(y/x)
 
-    d = r*0.5 - brick.x/2;       
+    d = r*0.4 - brick.x/2;       
     theta = atan((A(2)-B(2))/(A(1)-B(1)));
     x = d*cos(theta)+x1;
     y = d*sin(theta)+y1;
@@ -57,6 +57,7 @@ function [wallgoals,m] = GetGoals(base1,base2,r,brick)
                 layer = 4;
         end        
     end
+    plot([x1 x],[y1 y])
 
 
 end
