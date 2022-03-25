@@ -25,7 +25,7 @@ base2r = [base2x base2y 0];         %update base2
 % base1r = [base1x base1y 0];
 robot1 = LinearUR3(transl(base1));
 robot2 = LinearUR5(transl(base2r));
-%%
+
 robot2.model.base = robot2.model.base * troty(deg2rad(a));  %rotate base by a
 % robot1.model.base = robot1.model.base * troty(deg2rad(a));
 
@@ -39,7 +39,6 @@ qr1(1,1) = -0.4;
 robot1.model.animate(qr1) 
 
 
-%%
 hold on
 % Get brick positions and plot them
 brick1pos = [-0.4,0.2,0];
@@ -129,7 +128,74 @@ for i=1:5:370
 end
 maxXY = plot3(XYplane(1,:),XYplane(2,:),XYplane(3,:));
 maxXY2 = plot3(XYplane2(1,:),XYplane2(2,:),XYplane2(3,:));
+%%
 
+steps = deg2rad(45);
+rail_stps = 0.15;
+qlim1 = robot1.model.qlim;
+qlim2 = robot2.model.qlim;
+
+pointCloud1size = prod(floor((qlim1(2:7,2)-qlim1(2:7,1)/steps + 1)));
+pointCloud1size = pointCloud1size + prod(floor((qlim1(1,2)-qlim1(1,1)/rail_stps + 1)));
+
+pointCloud2size = prod(floor((qlim2(2:7,2)-qlim2(2:7,1)/steps + 1)));
+pointCloud2size = pointCloud2size + prod(floor((qlim2(1,2)-qlim2(1,1)/rail_stps + 1)));
+
+pointCloud1 = zeros(pointCloud1size,3);
+pointCloud2 = zeros(pointCloud2size,3);
+counter = 1;
+
+tic
+
+for q1 = qlim1(1,1):rail_stps:qlim1(1,2)
+    for q2 = qlim1(2,1):steps:qlim1(2,2)
+        for q3 = qlim1(3,1):steps:qlim1(3,2)
+            for q4 = qlim1(4,1):steps:qlim1(4,2)
+                for q5 = qlim1(5,1):steps:qlim1(5,2)
+                  for q6 = qlim1(6,1):steps:qlim1(6,2)
+                    % Don't need to worry about joint 7, just assume it=0
+                    q7 = 0;
+                        q = [q1,q2,q3,q4,q5,q6,q7];
+                        tr = robot1.model.fkine(q);                        
+                        pointCloud1(counter,:) = tr(1:3,4)';
+                        counter = counter + 1; 
+%                         if mod(counter/pointCloud1size * 100,1) == 0
+%                             display(['After ',num2str(toc),' seconds, completed ',num2str(counter/pointCloud1size * 100),'% of poses']);
+%                         end
+                   end
+                end
+            end
+        end
+    end
+end
+counter = 1;
+for q1 = qlim2(1,1):rail_stps:qlim2(1,2)
+    for q2 = qlim2(2,1):steps:qlim2(2,2)
+        for q3 = qlim2(3,1):steps:qlim2(3,2)
+            for q4 = qlim2(4,1):steps:qlim2(4,2)
+                for q5 = qlim2(5,1):steps:qlim2(5,2)
+                  for q6 = qlim2(6,1):steps:qlim2(6,2)
+                    % Don't need to worry about joint 7, just assume it=0
+                    q7 = 0;
+                        q = [q1,q2,q3,q4,q5,q6,q7];
+                        tr = robot2.model.fkine(q);                        
+                        pointCloud2(counter,:) = tr(1:3,4)';
+                        counter = counter + 1; 
+%                         if mod(counter/pointCloud2size * 100,1) == 0
+%                             display(['After ',num2str(toc),' seconds, completed ',num2str(counter/pointCloud2size * 100),'% of poses']);
+%                         end
+                   end
+                end
+            end
+        end
+    end
+end
+
+% 2.6 Create a 3D model showing where the end effector can be over all these samples.  
+r1cloud = plot3(pointCloud1(:,1),pointCloud1(:,2),pointCloud1(:,3),'r.');
+r2cloud = plot3(pointCloud2(:,1),pointCloud2(:,2),pointCloud2(:,3),'b.');
+
+%%
 % Divi bricks between the 2 bots by proximity
 
 distances = zeros(9,2);
@@ -151,6 +217,9 @@ r = ((base1(1)-XYplane(1,1))^2 + (base1(2)-XYplane(2,1))^2)^0.5; %radius around 
 [droppoints,m] = GetGoals(base1,base2,r,brick)
 UR3drops = [droppoints(1,:);droppoints(2,:);droppoints(4,:);droppoints(7,:)];
 UR5drops = [droppoints(3,:);droppoints(5,:);droppoints(6,:);droppoints(8,:);droppoints(9,:)];
+
+try delete(r1cloud); end;
+try delete(r2cloud); end;
 
 
 %%
