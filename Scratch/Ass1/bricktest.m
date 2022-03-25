@@ -133,7 +133,6 @@ for j=-0.8:0.4:0
 end
 maxXY = plot3(XYplane(1,:),XYplane(2,:),XYplane(3,:));
 maxXY2 = plot3(XYplane2(1,:),XYplane2(2,:),XYplane2(3,:));
-%%
 
 steps = deg2rad(45);
 rail_stps = 0.15;
@@ -223,6 +222,9 @@ r = ((base1(1)-XYplane(1,1))^2 + (base1(2)-XYplane(2,1))^2)^0.5; %radius around 
 UR3drops = [droppoints(1,:);droppoints(2,:);droppoints(4,:);droppoints(7,:)];
 UR5drops = [droppoints(3,:);droppoints(5,:);droppoints(6,:);droppoints(8,:);droppoints(9,:)];
 
+pause(1);
+try delete(maxXY); end;
+try delete(maxXY2); end;
 try delete(r1cloud); end;
 try delete(r2cloud); end;
 
