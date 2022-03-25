@@ -102,7 +102,7 @@ qr2 = zeros(1,7);
 qr1(1,5) = -pi/2;
 qr2(1,5) = -pi/2;
 qr2(1,3) = -pi/2;
-qr2(1,1) = -0.4;
+% qr2(1,1) = -0.4;
 pos = robot1.model.fkine(qr1);
 pos2 = robot2.model.fkine(qr2);
 XYplane = zeros(3,(370/5));
@@ -112,19 +112,24 @@ XYZ2 = pos2(1:3,4);
 XYplane(:,1) = XYZ;
 XYplane2(:,1) = XYZ2;
 index = 2;
-for i=1:5:370
-    
-    pos = robot1.model.fkine(qr1);
-    XYZ = pos(1:3,4);
-    XYplane(:,index) = XYZ;
-    qr1(1,2) = i*pi/180;
-    pos2 = robot2.model.fkine(qr2);
-    XYZ2 = pos2(1:3,4);
-    XYplane2(:,index) = XYZ2;
-    qr2(1,2) = i*pi/180;
-    index = index + 1;
-    pause(0.01);
-    
+for j=-0.8:0.4:0
+    qr1(1,1) = j;
+    qr2(1,1) = j;
+    for i=1:5:370
+
+        pos = robot1.model.fkine(qr1);
+        XYZ = pos(1:3,4);
+        XYplane(:,index) = XYZ;
+        qr1(1,2) = i*pi/180;
+
+        pos2 = robot2.model.fkine(qr2);
+        XYZ2 = pos2(1:3,4);
+        XYplane2(:,index) = XYZ2;
+        qr2(1,2) = i*pi/180;
+        index = index + 1;
+        pause(0.01);
+
+    end
 end
 maxXY = plot3(XYplane(1,:),XYplane(2,:),XYplane(3,:));
 maxXY2 = plot3(XYplane2(1,:),XYplane2(2,:),XYplane2(3,:));
@@ -145,7 +150,7 @@ pointCloud1 = zeros(pointCloud1size,3);
 pointCloud2 = zeros(pointCloud2size,3);
 counter = 1;
 
-tic
+
 
 for q1 = qlim1(1,1):rail_stps:qlim1(1,2)
     for q2 = qlim1(2,1):steps:qlim1(2,2)
