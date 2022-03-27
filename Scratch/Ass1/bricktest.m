@@ -48,7 +48,7 @@ surf([-2,-2;2,2],[-2,2;-2,2],[0,0;0,0],'CData',imread('concrete.jpg'),'FaceColor
 
 hold on
 % Get brick positions and plot them
-brick1pos = [-0.4,0.2,0];
+brick1pos = [0.35,0.8,0];
 brick2pos = [0.4,0.2,0];
 brick3pos = [-0.4,-0.2,0];
 brick4pos = [0.4,-0.2,0];
@@ -56,7 +56,7 @@ brick5pos = [0,0,0];
 brick6pos = [0.3,0,0];
 brick7pos = [-0.3,0,0];
 brick8pos = [0,-0.2,0];
-brick9pos = [0,0.2,0];
+brick9pos = [0.35,0.5,0];
 
 %store brick positions
 brickposes = {brick1pos brick2pos brick3pos brick4pos brick5pos brick6pos brick7pos...
@@ -141,7 +141,7 @@ end
 maxXY = plot3(XYplane(1,:),XYplane(2,:),XYplane(3,:));
 maxXY2 = plot3(XYplane2(1,:),XYplane2(2,:),XYplane2(3,:));
 r = ((base1(1)-XYplane(1,1))^2 + (base1(2)-XYplane(2,1))^2)^0.5; %radius around UR3
-%%
+%% Get max reach and volume
 steps = deg2rad(45);
 rail_stps = 0.15;
 qlim1 = robot1.model.qlim;
@@ -266,12 +266,18 @@ try delete(r2cloud); end;
     else
         brickrot = trotz(-atan(m));
  end
+ one1 = cell(4,1);
+ one2 = cell(4,1);
+ two1 = cell(4,1);
+ two2 = cell(4,1);
+ three1 = cell(4,1);
+ three2 = cell(4,1);
 for i=1:4
     g1 = robot1.model.getpos();
     g2 = robot2.model.getpos();
     T1 = transl(getbrickcoord{1,UR3bricks(i,1)}.x,getbrickcoord{1,UR3bricks(i,1)}.y,getbrickcoord{1,UR3bricks(i,1)}.z+0.2)*troty(pi);
     T2 = transl(getbrickcoord{1,UR5bricks(i,1)}.x,getbrickcoord{1,UR5bricks(i,1)}.y,getbrickcoord{1,UR5bricks(i,1)}.z+0.2)*troty(pi);
-    MovetoPoint(robot1,robot2,T1,T2);
+    [one1{i},one2{i}] = MovetoPoint(robot1,robot2,T1,T2);
     
     T1 = transl(getbrickcoord{1,UR3bricks(i,1)}.x,getbrickcoord{1,UR3bricks(i,1)}.y,getbrickcoord{1,UR3bricks(i,1)}.z+brick.z)*troty(pi);
     T2 = transl(getbrickcoord{1,UR5bricks(i,1)}.x,getbrickcoord{1,UR5bricks(i,1)}.y,getbrickcoord{1,UR5bricks(i,1)}.z+brick.z+0.08)*troty(pi);
@@ -279,11 +285,11 @@ for i=1:4
 %         g1 = [4.2147   -1.0467   -2.6180   -3.1280   -1.5784   -3.6394];
 %         g2 = robot2.model.getpos();
 %     end
-    MovetoPoint(robot1,robot2,T1,T2,g1,g2); 
+    [two1{i},two2{i}] = MovetoPoint(robot1,robot2,T1,T2,g1,g2); 
     
     b1 = transl(UR3drops(i,:))*troty(pi) * brickrot;
     b2 = transl(UR5drops(i,:))*transl(0,0,brick.z+0.02)*troty(pi) * brickrot;
-    [tr,tr2] = MoveBrick(robot1,robot2,b1,b2,Bricks,UR3bricks(i,1),UR5bricks(i,1),vertices);
+    [tr,tr2,three1{i},three2{i}] = MoveBrick(robot1,robot2,b1,b2,Bricks,UR3bricks(i,1),UR5bricks(i,1),vertices);
     
     % 'Drop' bricks
     tr(3,4) = UR3drops(i,3);
@@ -298,13 +304,13 @@ end
 
     %UR5 has one more brick to move
     T2 = transl(getbrickcoord{1,UR5bricks(5,1)}.x,getbrickcoord{1,UR5bricks(5,1)}.y,getbrickcoord{1,UR5bricks(5,1)}.z+0.2)*troty(pi);
-    MovetoPoint(robot1,robot2,ogT1,T2,ogq1,robot2.model.getpos());
+    [one1{5},one2{5}] = MovetoPoint(robot1,robot2,ogT1,T2,ogq1,robot2.model.getpos());
     
     T2 = transl(getbrickcoord{1,UR5bricks(5,1)}.x,getbrickcoord{1,UR5bricks(5,1)}.y,getbrickcoord{1,UR5bricks(5,1)}.z+brick.z+0.08)*troty(pi);
-    MovetoPoint(robot1,robot2,ogT1,T2,ogq1,robot2.model.getpos());  
+    [two1{5},two2{5}] = MovetoPoint(robot1,robot2,ogT1,T2,ogq1,robot2.model.getpos());  
     
     b2 = transl(UR5drops(5,:))*transl(0,0,brick.z+0.02)*troty(pi) * brickrot;
-    [tr,tr2] = MoveBrick(robot1,robot2,0,b2,Bricks,0,UR5bricks(5,1),vertices);
+    [tr,tr2,three1{5},three2{5}] = MoveBrick(robot1,robot2,0,b2,Bricks,0,UR5bricks(5,1),vertices);
     
    
     tr2(3,4) = UR5drops(5,3);
@@ -318,59 +324,23 @@ end
     %End
     
     
-%% Move effector to brick
-% % try delete(maxXY); end;
-%  
-% T2 = transl(getbrickcoord{1,UR3bricks(1,1)}.x,getbrickcoord{1,UR3bricks(1,1)}.y,getbrickcoord{1,UR3bricks(1,1)}.z+0.2)*troty(pi);
-% T22 = transl(getbrickcoord{1,UR5bricks(1,1)}.x,getbrickcoord{1,UR5bricks(1,1)}.y,getbrickcoord{1,UR5bricks(1,1)}.z+0.2)*troty(pi);
-% MovetoPoint(robot1,robot2,T2,T22);
-% 
-% 
-% T3 = transl(getbrickcoord{1,UR3bricks(1,1)}.x,getbrickcoord{1,UR3bricks(1,1)}.y,getbrickcoord{1,UR3bricks(1,1)}.z+brick.z)*troty(pi);
-% T33 = transl(getbrickcoord{1,UR5bricks(1,1)}.x,getbrickcoord{1,UR5bricks(1,1)}.y,getbrickcoord{1,UR5bricks(1,1)}.z+brick.z)*troty(pi);
-% 
-% MovetoPoint(robot1,robot2,T3,T33);
-% %% Move brick to end goal
-% 
-% if abs(m) == inf
-%     brickrot = trotz(pi/2);
-% elseif m == 0
-%     brickrot = 1;
-% else
-%     brickrot = trotz(-atan(m));
-% end
-% 
-% 
-% brick1drop = transl(droppoints(1,:))*troty(pi) * brickrot;
-% MoveBrick(robot1,robot2,brick1drop,T22,Bricks,UR3bricks(1,1),UR5bricks(1,1),vertices,brick);
-% 
-% % 
-% % T2 = transl(getbrickcoord{1,UR3bricks(1,1)}.x,getbrickcoord{1,UR3bricks(1,1)}.y,getbrickcoord{1,UR3bricks(1,1)}.z+0.2)*troty(pi);
-% % T22 = transl(getbrickcoord{1,UR5bricks(1,1)}.x,getbrickcoord{1,UR5bricks(1,1)}.y,getbrickcoord{1,UR5bricks(1,1)}.z+0.2)*troty(pi);
-% % MovetoPoint(robot1,robot2,T2,T22);
-% 
-% 
-% %% Move brick to end goal
-% 
-% T3 = transl(getbrickcoord{1,UR3bricks(2,1)}.x,getbrickcoord{1,UR3bricks(2,1)}.y,getbrickcoord{1,UR3bricks(2,1)}.z+brick.z)*troty(pi);
-% T33 = transl(getbrickcoord{1,UR5bricks(2,1)}.x,getbrickcoord{1,UR5bricks(2,1)}.y,getbrickcoord{1,UR5bricks(2,1)}.z+brick.z)*troty(pi);
-% 
-% MovetoPoint(robot1,robot2,T3,T33);
-% 
-% %%
-% if abs(m) == inf
-%     brickrot = trotz(pi/2);
-% elseif m == 0
-%     brickrot = 1;
-% else
-%     brickrot = trotz(-atan(m));
-% end
-% 
-% 
-% brick1drop = transl(droppoints(2,:))*troty(pi) * brickrot;
-% MoveBrick(robot1,robot2,brick1drop,T33,Bricks,UR3bricks(2,1),UR5bricks(2,1),vertices,brick);
-% 
+%% Play ROS bag
+close all
+clear all
 
+rosbag info 2018-03-20-18-34-46.bag
+
+bag = rosbag('2018-03-20-18-34-46.bag');
+
+sel = select(bag,'Topic','/joint_states');
+
+qs = readMessages(sel);
+
+bagrobot = UR3
+for i=1:5:sel.NumMessages
+    q = (qs{i,1}.Position)'
+    bagrobot.model.animate(q);   
+end
 
 
 

@@ -1,4 +1,4 @@
-function MovetoPoint(robot1,robot2,point1,point2,g1,g2)
+function [r1Ts,r2Ts] = MovetoPoint(robot1,robot2,point1,point2,g1,g2)
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
     if nargin < 5
@@ -7,6 +7,8 @@ function MovetoPoint(robot1,robot2,point1,point2,g1,g2)
     end
      
     steps = 50;
+    r1Ts = cell(steps,2);
+    r2Ts = cell(steps,2);
     s = lspb(0,1,steps);
     q1Matrix = nan(steps,7);
     q2Matrix = nan(steps,7);
@@ -31,6 +33,14 @@ function MovetoPoint(robot1,robot2,point1,point2,g1,g2)
     for i=1:steps
         robot1.model.animate(q1Matrix(i,:));
         robot2.model.animate(q2Matrix(i,:));
+        q1 = robot1.model.getpos()
+        r1Ts{i,1} = q1;
+        robot1.model.fkine(q1)
+        r1Ts{i,2} = robot1.model.fkine(q1);
+        q2 = robot2.model.getpos()
+        r1Ts{i,1} = q2;
+        robot2.model.fkine(q2)
+        r2Ts{i,2} = robot2.model.fkine(q2);
         pause(0.1)
     end
 
