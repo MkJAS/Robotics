@@ -12,10 +12,10 @@ base2 = [0.4,-0.6,0];
 %Calculate location of UR5 base such that the centre of the rail is at
 %base2 and the rail is rotated so that its normal is in line with the base
 %of the UR3
-local = base2 - base1                   %get UR5 in UR3 local coord frame
-a = 90 - abs(atand(local(2)/local(1)))  %angle of needed rotation
-base2x = 0.4*cosd(a) + base2(1)         %the LinUR5 base is at the end of the rail so in order to compensate
-base2y = 0.4*sind(a) + base2(2)         %for the centre of the rail being at base2 I move the true base 0.4
+local = base2 - base1;                   %get UR5 in UR3 local coord frame
+a = 90 - abs(atand(local(2)/local(1)));  %angle of needed rotation
+base2x = 0.4*cosd(a) + base2(1);         %the LinUR5 base is at the end of the rail so in order to compensate
+base2y = 0.4*sind(a) + base2(2);         %for the centre of the rail being at base2 I move the true base 0.4
 base2r = [base2x base2y 0];         %update base2
 % 
 %                 
@@ -37,6 +37,13 @@ robot2.model.animate(qr2) %Move UR5 so its starts at centre of rail
 qr1 = zeros(1,7);         %
 qr1(1,1) = -0.4;
 robot1.model.animate(qr1) 
+hold on
+PlaceObject('cage.ply')
+axis([-2.5 2.5 -2 2 -0.01 2])
+surf([-2,-2;2,2],[-2,2;-2,2],[0,0;0,0],'CData',imread('concrete.jpg'),'FaceColor','texturemap');
+% surf([-1.8,-1.8;-1.8,-1.8],[-1.8,1.8;-1.8,1.8],[0.01,0.01;1,1],'CData',imread('Screenshot_4.jpg'),'FaceColor','texturemap');
+% surf([1.8,1.8;1.8,1.8],[-1.8,1.8;-1.8,1.8],[0.01,0.01;1,1],'CData',imread('Screenshot_4.jpg'),'FaceColor','texturemap');
+
 %%
 
 hold on
@@ -135,70 +142,70 @@ maxXY = plot3(XYplane(1,:),XYplane(2,:),XYplane(3,:));
 maxXY2 = plot3(XYplane2(1,:),XYplane2(2,:),XYplane2(3,:));
 r = ((base1(1)-XYplane(1,1))^2 + (base1(2)-XYplane(2,1))^2)^0.5; %radius around UR3
 %%
-% steps = deg2rad(45);
-% rail_stps = 0.15;
-% qlim1 = robot1.model.qlim;
-% qlim2 = robot2.model.qlim;
-% 
-% pointCloud1size = prod(floor((qlim1(2:7,2)-qlim1(2:7,1)/steps + 1)));
-% pointCloud1size = pointCloud1size + prod(floor((qlim1(1,2)-qlim1(1,1)/rail_stps + 1)));
-% 
-% pointCloud2size = prod(floor((qlim2(2:7,2)-qlim2(2:7,1)/steps + 1)));
-% pointCloud2size = pointCloud2size + prod(floor((qlim2(1,2)-qlim2(1,1)/rail_stps + 1)));
-% 
-% pointCloud1 = zeros(pointCloud1size,3);
-% pointCloud2 = zeros(pointCloud2size,3);
-% counter = 1;
-% 
-% 
-% 
-% for q1 = qlim1(1,1):rail_stps:qlim1(1,2)
-%     for q2 = qlim1(2,1):steps:qlim1(2,2)
-%         for q3 = qlim1(3,1):steps:qlim1(3,2)
-%             for q4 = qlim1(4,1):steps:qlim1(4,2)
-%                 for q5 = qlim1(5,1):steps:qlim1(5,2)
-%                   for q6 = qlim1(6,1):steps:qlim1(6,2)
-%                     % Don't need to worry about joint 7, just assume it=0
-%                     q7 = 0;
-%                         q = [q1,q2,q3,q4,q5,q6,q7];
-%                         tr = robot1.model.fkine(q);                        
-%                         pointCloud1(counter,:) = tr(1:3,4)';
-%                         counter = counter + 1; 
-% %                         if mod(counter/pointCloud1size * 100,1) == 0
-% %                             display(['After ',num2str(toc),' seconds, completed ',num2str(counter/pointCloud1size * 100),'% of poses']);
-% %                         end
-%                    end
-%                 end
-%             end
-%         end
-%     end
-% end
-% counter = 1;
-% for q1 = qlim2(1,1):rail_stps:qlim2(1,2)
-%     for q2 = qlim2(2,1):steps:qlim2(2,2)
-%         for q3 = qlim2(3,1):steps:qlim2(3,2)
-%             for q4 = qlim2(4,1):steps:qlim2(4,2)
-%                 for q5 = qlim2(5,1):steps:qlim2(5,2)
-%                   for q6 = qlim2(6,1):steps:qlim2(6,2)
-%                     % Don't need to worry about joint 7, just assume it=0
-%                     q7 = 0;
-%                         q = [q1,q2,q3,q4,q5,q6,q7];
-%                         tr = robot2.model.fkine(q);                        
-%                         pointCloud2(counter,:) = tr(1:3,4)';
-%                         counter = counter + 1; 
-% %                         if mod(counter/pointCloud2size * 100,1) == 0
-% %                             display(['After ',num2str(toc),' seconds, completed ',num2str(counter/pointCloud2size * 100),'% of poses']);
-% %                         end
-%                    end
-%                 end
-%             end
-%         end
-%     end
-% end
-% 
-%  
-% r1cloud = plot3(pointCloud1(:,1),pointCloud1(:,2),pointCloud1(:,3),'r.');
-% r2cloud = plot3(pointCloud2(:,1),pointCloud2(:,2),pointCloud2(:,3),'b.');
+steps = deg2rad(45);
+rail_stps = 0.15;
+qlim1 = robot1.model.qlim;
+qlim2 = robot2.model.qlim;
+
+pointCloud1size = prod(floor((qlim1(2:7,2)-qlim1(2:7,1)/steps + 1)));
+pointCloud1size = pointCloud1size + prod(floor((qlim1(1,2)-qlim1(1,1)/rail_stps + 1)));
+
+pointCloud2size = prod(floor((qlim2(2:7,2)-qlim2(2:7,1)/steps + 1)));
+pointCloud2size = pointCloud2size + prod(floor((qlim2(1,2)-qlim2(1,1)/rail_stps + 1)));
+
+pointCloud1 = zeros(pointCloud1size,3);
+pointCloud2 = zeros(pointCloud2size,3);
+counter = 1;
+
+
+
+for q1 = qlim1(1,1):rail_stps:qlim1(1,2)
+    for q2 = qlim1(2,1):steps:qlim1(2,2)
+        for q3 = qlim1(3,1):steps:qlim1(3,2)
+            for q4 = qlim1(4,1):steps:qlim1(4,2)
+                for q5 = qlim1(5,1):steps:qlim1(5,2)
+                  for q6 = qlim1(6,1):steps:qlim1(6,2)
+                    % Don't need to worry about joint 7, just assume it=0
+                    q7 = 0;
+                        q = [q1,q2,q3,q4,q5,q6,q7];
+                        tr = robot1.model.fkine(q);                        
+                        pointCloud1(counter,:) = tr(1:3,4)';
+                        counter = counter + 1; 
+%                         if mod(counter/pointCloud1size * 100,1) == 0
+%                             display(['After ',num2str(toc),' seconds, completed ',num2str(counter/pointCloud1size * 100),'% of poses']);
+%                         end
+                   end
+                end
+            end
+        end
+    end
+end
+counter = 1;
+for q1 = qlim2(1,1):rail_stps:qlim2(1,2)
+    for q2 = qlim2(2,1):steps:qlim2(2,2)
+        for q3 = qlim2(3,1):steps:qlim2(3,2)
+            for q4 = qlim2(4,1):steps:qlim2(4,2)
+                for q5 = qlim2(5,1):steps:qlim2(5,2)
+                  for q6 = qlim2(6,1):steps:qlim2(6,2)
+                    % Don't need to worry about joint 7, just assume it=0
+                    q7 = 0;
+                        q = [q1,q2,q3,q4,q5,q6,q7];
+                        tr = robot2.model.fkine(q);                        
+                        pointCloud2(counter,:) = tr(1:3,4)';
+                        counter = counter + 1; 
+%                         if mod(counter/pointCloud2size * 100,1) == 0
+%                             display(['After ',num2str(toc),' seconds, completed ',num2str(counter/pointCloud2size * 100),'% of poses']);
+%                         end
+                   end
+                end
+            end
+        end
+    end
+end
+
+ 
+r1cloud = plot3(pointCloud1(:,1),pointCloud1(:,2),pointCloud1(:,3),'r.');
+r2cloud = plot3(pointCloud2(:,1),pointCloud2(:,2),pointCloud2(:,3),'b.');
 %%
 % Divi bricks between the 2 bots by proximity
 distances = zeros(9,2); %contains the distances and brick number
