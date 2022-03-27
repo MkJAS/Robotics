@@ -7,9 +7,9 @@ function [tr,tr2] = MoveBrick(robot1,robot2,point1,point2,Bricks,UR3bricks,UR5br
     if size(point1,1) > 2
         q1r1 = robot1.model.getpos();
         q1r2 = robot2.model.getpos();
-        q = q1r1;
-        q(1,4) = -pi/2;
-        q2r1 = robot1.model.ikcon(point1,q);
+        g1 = q1r1;
+
+        q2r1 = robot1.model.ikcon(point1,g1);
         q2r2 = robot2.model.ikcon(point2,q1r2);
 
 
