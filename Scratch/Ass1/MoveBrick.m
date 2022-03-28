@@ -1,4 +1,5 @@
 function [tr,tr2,r1Ts,r2Ts] = MoveBrick(robot1,robot2,point1,point2,Bricks,UR3bricks,UR5bricks,vertices)
+    %Moves end effector from brick location to wall construction point 
     steps = 50;
     s = lspb(0,1,steps);
     r1Ts = cell(steps,2);
@@ -30,6 +31,7 @@ function [tr,tr2,r1Ts,r2Ts] = MoveBrick(robot1,robot2,point1,point2,Bricks,UR3br
             set(Bricks{UR3bricks,1},'Vertices',transformedVertices(:,1:3));
             set(Bricks{UR5bricks,1},'Vertices',transformedVertices2(:,1:3));
             drawnow();
+            %Print and store each transform and q matrix
             q1 = robot1.model.getpos()
             r1Ts{i,1} = q1;
             robot1.model.fkine(q1)
