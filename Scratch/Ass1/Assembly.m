@@ -49,7 +49,7 @@ brick1pos = [0.35,0.8,0];
 brick2pos = [0.4,0.2,0];
 brick3pos = [-0.4,-0.2,0];
 brick4pos = [0.4,-0.2,0];
-brick5pos = [0,0,0];
+brick5pos = [0.2,0,0];
 brick6pos = [0.3,0,0];
 brick7pos = [-0.3,0,0];
 brick8pos = [0,-0.2,0];
@@ -136,7 +136,7 @@ maxXY = plot3(XYplane(1,:),XYplane(2,:),XYplane(3,:));
 maxXY2 = plot3(XYplane2(1,:),XYplane2(2,:),XYplane2(3,:));
 r = ((base1(1)-XYplane(1,1))^2 + (base1(2)-XYplane(2,1))^2)^0.5; %radius around UR3
 %% Get max reach and volume
-steps = deg2rad(45);        %revolute joint increments
+steps = deg2rad(90);        %revolute joint increments
 rail_stps = 0.2;            %rail joint increments
 qlim1 = robot1.model.qlim;
 qlim2 = robot2.model.qlim;
@@ -315,7 +315,7 @@ qs = readMessages(sel);
 bagrobot = UR3;
 for i=1:5:sel.NumMessages
     q = (qs{i,1}.Position)
-    bagrobot.model.animate(q);   
+    bagrobot.model.animate(q');   
 end
 
 
