@@ -1,10 +1,10 @@
-classdef LinearUR3 < handle
+classdef Dobot < handle
     properties
         %> Robot model
         model;
         
         %>
-        workspace = [-2 2 -2 2 -0.01 2];   
+        workspace = [-1 1 -1 1 -0.3 1];   
         
         %> Flag to indicate if gripper is used
         useGripper = false;
@@ -12,8 +12,8 @@ classdef LinearUR3 < handle
                
     end
     
-    methods%% Class for LinearUR3 robot simulation
-        function self = LinearUR3(base)
+    methods%% Class for Dobot robot simulation
+        function self = Dobot(base)
             if nargin < 1
                 base = transl(0, 0, 0);
             end
@@ -23,42 +23,31 @@ classdef LinearUR3 < handle
     
         self.base = base;
         % robot = 
-        self.GetUR3Robot();
+        self.GetDobotRobot();
         self.PlotAndColourRobot();
       
         end
 
-        %% GetUR3Robot
-        % Given a name (optional), create and return a UR3 robot model
-        function GetUR3Robot(self)
+        %% GetDobotRobot
+        % Given a name (optional), create and return a Dobot robot model
+        function GetDobotRobot(self)
         %     if nargin < 1
                 % Create a unique name (ms timestamp after 1ms pause)
                 pause(0.001);
-                name = ['LinearUR_3_', datestr(now, 'yyyymmddTHHMMSSFFF')];
+                name = ['Dobot', datestr(now, 'yyyymmddTHHMMSSFFF')];
         %     end
-            L(1) = Link([pi     0       0       pi/2    1]); % PRISMATIC Link
-            L(2) = Link('d', 0.1519, 'a', 0, 'alpha', -pi/2, 'offset', 0, 'qlim', [-2*pi 2*pi]);
-            L(3) = Link('d', 0, 'a', -0.24365, 'alpha', -pi,'offset', pi, 'qlim', [-190*pi/180,10*pi/180]);
-            L(4) = Link('d', 0, 'a', -0.21325, 'alpha', pi, 'offset', 0, 'qlim', [-150*pi/180,150*pi/180]);
-            L(5) = Link('d', 0.11235, 'a', 0, 'alpha', -pi/2, 'offset', pi, 'qlim', [-2*pi 2*pi]);
-            L(6) = Link('d', 0.08535, 'a', 0, 'alpha', pi/2, 'offset', 0, 'qlim', [-2*pi 2*pi]);
-            L(7) = Link('d', 0.0819, 'a', 0, 'alpha', 0, 'offset', 0, 'qlim', [-2*pi 2*pi]);
-            L(1).qlim = [-0.8 0];
-%             L(1).offset = -0.4;
+            L(1) = Link('d', 0.138, 'a', 0, 'alpha', -pi/2, 'offset', 0);
+            L(2) = Link('d', 0, 'a', 0.135, 'alpha',0,'offset', 0);
+            L(3) = Link('d', 0, 'a', 0.147, 'alpha', pi, 'offset',0);
+            L(4) = Link('d', 0.041, 'a', 0, 'alpha', -pi/2, 'offset', 0);
             self.model = SerialLink(L, 'name', name, 'base', self.base);
-             % Rotate robot to the correct orientation
-            self.model.base = self.model.base * trotx(pi/2) * troty(pi/2);
            end
         %% PlotAndColourRobot
         % Given a robot index, add the glyphs (vertices and faces) and
         % colour them in if data is available 
         function PlotAndColourRobot(self)%robot,workspace)
             for linkIndex = 0:self.model.n
-                if self.useGripper && linkIndex == self.model.n
-                    [ faceData, vertexData, plyData{linkIndex + 1} ] = plyread(['LinUR3Link', num2str(linkIndex), 'Gripper.ply'], 'tri'); %#ok<AGROW>
-                else
-                    [ faceData, vertexData, plyData{linkIndex + 1} ] = plyread(['LinUR3Link', num2str(linkIndex), '.ply'], 'tri'); %#ok<AGROW>
-                end
+                [ faceData, vertexData, plyData{linkIndex + 1} ] = plyread(['DobotLink', num2str(linkIndex), '.ply'], 'tri'); %#ok<AGROW>
                 self.model.faces{linkIndex + 1} = faceData;
                 self.model.points{linkIndex + 1} = vertexData;
             end

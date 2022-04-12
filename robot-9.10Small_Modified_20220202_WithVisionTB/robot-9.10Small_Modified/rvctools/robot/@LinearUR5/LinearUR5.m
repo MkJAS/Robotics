@@ -4,7 +4,7 @@ classdef LinearUR5 < handle
         model;
         
         %>
-        workspace = [-2 2 -2 2 -0.3 2];   
+        workspace = [-2 2 -2 2 -0.01 2];   
         
         %> Flag to indicate if gripper is used
         useGripper = false;        
@@ -60,7 +60,7 @@ function GetUR5Robot(self)
 %     self.model = SerialLink(L,'name',name);
     self.model = SerialLink(L, 'name', name, 'base', self.base);
     % Rotate robot to the correct orientation
-    self.model.base = self.model.base * trotx(pi/2) * troty(pi/2);
+    self.model.base = self.model.base * trotx(pi/2)* troty(pi/2);
 end
 %% PlotAndColourRobot
 % Given a robot index, add the glyphs (vertices and faces) and
