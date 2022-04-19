@@ -3,21 +3,18 @@ clear all;
 
 % Link('theta',__,'d',__,'a',__,'alpha',__,'offset',__,'qlim',[ ... ])
 
-L1 = Link('d',1,'a',0,'alpha',pi/2,'offset',0);
-
-L2 = Link('d',0,'a',1,'alpha',0,'offset',0);
-% 
-L3 = Link('d',0,'a',1,'alpha',-pi/2,'offset',0);
-% 
-L4 = Link('d',0,'a',1,'alpha',-pi/2,'offset',0);
+ L(1) = Link('d', 0.138, 'a', 0, 'alpha', -pi/2, 'offset', 0);
+            L(2) = Link('d', 0, 'a', 0.135, 'alpha',0,'offset', 0);
+            L(3) = Link('d', 0, 'a', 0.147, 'alpha', pi, 'offset',0);
+            L(4) = Link('d', 0.041, 'a', 0, 'alpha', -pi/2, 'offset', 0);
 % 
 % L5 = Link('d',0,'a',0,'alpha',-pi/2,'offset',0);
 % 
 % L6 = Link('d',0,'a',0,'alpha',0,'offset',0);
 
-robot = SerialLink([L1 L2 L3]);
+robot = SerialLink(L);
 
-q = zeros(1,3);
+q = zeros(1,4);
 
 robot.plot(q)
 %% 
