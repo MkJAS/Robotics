@@ -65,7 +65,7 @@ for i = 1:steps-1
             qdot(i,j) = 0; % Stop the motor
         end
     end
-    qMatrix(i+1,:) = qMatrix(i,:) + deltaT * qdot(i,:); % Update next joint state based on joint velocities
+    qMatrix(i+1,:) = qMatrix(i,:) + deltaT * qdot(i,:)'; % Update next joint state based on joint velocities
     m(i) = sqrt(det(J*J'));  % Record manipulability
     positionError(:,i) = deltaX;  % For plotting
     angleError(:,i) = deltaTheta; % For plotting
