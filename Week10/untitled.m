@@ -3,27 +3,27 @@ clear all;
 clf;
 clc
 
-%% Q1: Manipulability measure
+%% Manipulability measure
 
 disp('The measure of manipularity is used to tell how much the cartesian EE can move at a given joint state')
 disp('Manipulability measures the surface area of the velocity ellipsoid = false');
 disp('the velocity ellipsoid indicates how fast the end-effector can move in different directions');
 disp('the damping coefficient in damped least squares should be as small as possible to avoid end effector error=true');
 
-%% Q2: Collision Detection Line (basic)
+%% Collision Detection Line (basic)
 
 DoF = 4;
 triangles = 40;
 collisionChecksRequired = DoF*triangles
 
-%% Q3: Collision detection line (harder)
+%% Collision detection line (harder)
 
 mdl_planar3;
 
-[v,f,fn] = RectangularPrism([2,-1,-1], [3,1,1])
+[v,f,fn] = RectangularPrism([2,-1.1,-1], [3,1.1,1]);
 steps = 50;
-q1 = [-pi/3,-pi/2,0]; 
-q2 = [pi/3,pi/2,0];
+q1 = [pi/3,0,0]; 
+q2 = [-pi/3,0,0];
 
 hold on
 qMatrix = jtraj(q1,q2,steps);
@@ -39,11 +39,11 @@ for i = 1:steps
 end 
 
 
-%% Q4: Collision detection Points
+%% Collision detection Points
 
-centerPoint = [-4,0,4]; %%%%%%%%%%% CHANGE %%%%%%%%%%%
-radii = [1,1,1]; %%%%%%%%%%% CHANGE %%%%%%%%%%%
-[X,Y] = meshgrid(-10:1:10,-10:1:10); Z = X; %%%%%%%%%%% CHANGE %%%%%%%%%%%
+centerPoint = [0,0,0]; %%%%%%%%%%% CHANGE %%%%%%%%%%%
+radii = [1.1,1.1,1.1]; %%%%%%%%%%% CHANGE %%%%%%%%%%%
+[X,Y] = meshgrid(-5:0.1:5,-5:0.1:5); Z = X; %%%%%%%%%%% CHANGE %%%%%%%%%%%
 
 [x y z] = ellipsoid( centerPoint(1), centerPoint(2), centerPoint(3), radii(1), radii(2), radii(3) ); 
 robotEllipsoid = surf(x, y, z);
@@ -59,11 +59,10 @@ algebraicDist = ((points(:,1)-centerPoint(1))/radii(1)).^2 ...
 pointsInside = find(algebraicDist < 1); %%%%%%%%%%% CHANGE %%%%%%%%%%%
 display(['There are ', num2str(size(pointsInside,1)),' points inside']);
 
-%% Q5: Near singularity 6DoF
+%% Near singularity 6DoF
 
 mdl_puma560;
-
-q = [0 1.5708 -3.1416 0 0 0]
+q = [0 1.5708 -3.0159 0.1466 0.5585 0] 
 % q = [0 0.01 0 0 0 0]
 % q = [0 2.1677 -2.7332 0 -0.9425 0]
 % q = [0 0.7854 3.1416 0 0.7854 0]
@@ -73,40 +72,39 @@ m = sqrt(det(J*J')) % the smaller, the closer to singularity
 t = abs(J) * abs(inv(J)); 
 y=max(max(t)) % the bigger, the closer to singularity
 
-%% Q6: Near Singularity 3Dof Planar
+%% Near Singularity 3Dof Planar
 
 mdl_planar3;
 
 % q = [0 1.5708 -1.5708];
 % q = [0.5 0.5 0.5];
 % q = [0 -0.7854 -0.7854];
-q = [0.7854 -0.7854 0.7854];
-
+q = [0.65 0.11 -0.1];  
 Ja = p3.jacob0(q);
 J = Ja(1:2, :);
 m = sqrt(det(J*J')) % the smaller this value is, the closer the EE is to a singularity
 t = abs(J) * abs(pinv(J)); 
 max(max(t)) % the bigger, the closer to singularity
 
-%% Q7: Resolved motion rate control
+%% Resolved motion rate control
 
 disp("A robotic system is REDUNDANT if the Jacobian has MORE COLUMNS THAN ROWS")
 disp("Near SINGULAR CONFIGURATIONS, solutions for joint velocities grow to INFINITY")
 disp("The Jacobian indicates how the end-effector will move as a function of the current joint state")
 
-%% Q8: Optimisation
+%% Optimisation
 
 disp ("Damp least squares Q: the damping coefficient in DLS should be as small as possible to avoid end-effector error   Answer:TRUE")
 disp ("The velocity ellipsoid indicates how fast the end-effector can move to different orientations (roll, pitch, yaw)  Answer:FALSE")
 
-%% Q9: Distance Sense Distance to Puma End Effector
+%% Distance Sense Distance to Puma End Effector
 
 clear all;
 mdl_puma560
 
 q = deg2rad([0, 45, -80, 0, 45, 0]);
 ee = p560.fkine(q);
-cam = transl(2.2265,-0.6828,1.6327);
+cam = transl(2.2265, -0.6828, 1.6327);
 final = inv(ee)*cam;
 norm(final(1:3,4))
 
