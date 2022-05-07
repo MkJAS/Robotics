@@ -11,16 +11,16 @@ clc;
 %% 2.1 Load a 2-Link planar robot, and assign parameters for the simulation
 mdl_planar2;                                                               % Load 2-Link Planar Robot
 M = [1 1 zeros(1,4)];                                                      % Masking Matrix
-t = ... ;                                                                  % Total time in seconds (try 5 sec)
-steps = ... ;                                                              % No. of steps (try 100)
+t = 5;                                                                     % Total time in seconds (try 5 sec)
+steps = 100;                                                              % No. of steps (try 100)
 deltaT = t/steps;                                                          % Discrete time step
-deltaTheta = 4*pi/steps;                                                   % Small angle change
+deltaTheta = 2*pi/steps;                                                   % Small angle change
 qMatrix = zeros(steps,2);                                                  % Assign memory for joint angles
 x = zeros(2,steps);                                                        % Assign memory for trajectory
 m = zeros(1,steps);                                                        % For recording measure of manipulability
 errorValue = zeros(2,steps);                                               % For recording velocity error
 
-% minManipMeasure = 0.1;                                                   % Required for the dampled least squared questions
+minManipMeasure = 0.1;                                                   % Required for the dampled least squared questions
 
 %% 2.2	Create a trajectory
 for i = 1:steps
@@ -34,22 +34,22 @@ qMatrix(1,:) = p2.ikine(T,[0 0],M);
 
 %% 2.4	Use Resolved Motion Rate Control to solve joint velocities 
 for i = 1:steps-1
-    T = ...;                                                                % End-effector transform at current joint state
-    xdot = ...;                                                            % Calculate velocity at discrete time step
-    J = ...;                                                               % Get the Jacobian at the current state (use jacob0)
+    T = p2.fkine(qMatrix(i,:));                                             % End-effector transform at current joint state
+    xdot = (x(:,i+1)-x(:,i))/deltaT;                                       % Calculate velocity at discrete time step
+    J = p2.jacob0(qMatrix(i,:));                                           % Get the Jacobian at the current state (use jacob0)
     J = J(1:2,:);                                                           % Take only first 2 rows
     m(:,i)= sqrt(det(J*J'));                                                % Measure of Manipulability
-    qdot = ......;                                                          % Solve velocitities via RMRC
+    qdot = inv(J) * xdot;                                                          % Solve velocitities via RMRC
 
 %%% 2.7 Use dampled least squared
-%     if m(:,i) < minManipMeasure
-%         qdot = ...;                                                       %Use dampled least squared
-%     else
-%         qdot = ...;                                                       % Solve velocitities via RMRC
-%     end
+    if m(:,i) < minManipMeasure
+        qdot = inv(J'*J + 0.01*eye(2))*J'*xdot;
+    else
+        qdot = inv(J) * xdot;                                               % Solve velocitities via RMRC
+    end
 
-    errorValue(:,i) = ...;                                                  % Velocity error
-    qMatrix(i+1,:) = ...;                                                   % Update next joint state
+    errorValue(:,i) = xdot - J*qdot;                                                  % Velocity error
+    qMatrix(i+1,:) = qMatrix(i,:) + deltaT * qdot';                                                   % Update next joint state
     end
 
 %% 2.5	Now plot the trajectory and the error.
@@ -62,7 +62,7 @@ title('Manipulability of 2-Link Planar')
 ylabel('Manipulability')
 xlabel('Step')
 figure(3)
-plot(error','Linewidth',1)
+plot(errorValue','Linewidth',1)
 ylabel('Error (m/s)')
 xlabel('Step')
 legend('x-velocity','y-velocity');

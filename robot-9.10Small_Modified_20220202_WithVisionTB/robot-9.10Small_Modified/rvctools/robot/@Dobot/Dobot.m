@@ -2,12 +2,12 @@ classdef Dobot < handle
     properties
         %> Robot model
         model;
+        lims;
         
         %>
         workspace = [-1 1 -1 1 -0.3 1];   
-        
-        %> Flag to indicate if gripper is used
-        useGripper = false;
+        name = 'Dobot';
+        qIntermediary = deg2rad([0 45 45 0 0]);
         base;
                
     end
@@ -25,6 +25,7 @@ classdef Dobot < handle
         % robot = 
         self.GetDobotRobot();
         self.PlotAndColourRobot();
+        self.GetLims();
       
         end
 
@@ -36,7 +37,7 @@ classdef Dobot < handle
                 pause(0.001);
                 name = ['Dobot', datestr(now, 'yyyymmddTHHMMSSFFF')];
         %     end
-          L(1) = Link('d', 0.138, 'a', 0, 'alpha', -pi/2, 'offset', 0,'qlim',[-135*pi/180 135*pi/180]);
+            L(1) = Link('d', 0.138, 'a', 0, 'alpha', -pi/2, 'offset', 0,'qlim',[-135*pi/180 135*pi/180]);
             L(2) = Link('d', 0, 'a', 0.135, 'alpha',0,'offset', -pi/2,'qlim',[5*pi/180 80*pi/180]);
             L(3) = Link('d', 0, 'a', 0.147, 'alpha', pi, 'offset',0,'qlim',[-5*pi/180 85*pi/180]);
             L(4) = Link('d', 0, 'a', 0.041, 'alpha', pi/2, 'offset', 0,'qlim',[-pi/2 pi/2]);
@@ -75,6 +76,26 @@ classdef Dobot < handle
                 end
             end
         end
+
+        function GetLims(self)
+            qlim = self.model.qlim;
+            qlim(2,:) = [5*pi/180 80*pi/180];
+            qlim(3,:) = [5*pi/180 85*pi/180];
+            lowerLimit = [];
+            upperLimit = [];
+             for q2 = qlim(2,1):0.01:qlim(2,2)
+                 for theta3 = qlim(3,1):0.01:qlim(3,2)+0.01
+                     q3 = pi/2 - q2 + theta3;
+                     if theta3 <= qlim(3,1)
+                        lowerLimit = [lowerLimit;q2,q3]; %#ok<AGROW>
+                     elseif qlim(3,2) <= theta3
+                        upperLimit = [upperLimit;q2,q3]; %#ok<AGROW>
+                     end
+                 end
+             end
+             self.lims = [lowerLimit upperLimit];
+
+        end 
         
     end
 end

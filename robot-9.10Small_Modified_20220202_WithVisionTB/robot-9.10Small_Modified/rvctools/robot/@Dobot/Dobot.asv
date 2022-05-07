@@ -1,19 +1,19 @@
-classdef UR3 < handle
+classdef Dobot < handle
     properties
         %> Robot model
         model;
+        lims;
         
         %>
-        workspace = [-2 2 -2 2 -0.3 2];   
-        
-        %> Flag to indicate if gripper is used
-        useGripper = false;
+        workspace = [-1 1 -1 1 -0.3 1];   
+        name = 'Dobot';
+        qIntermediary = deg2rad([0 45 45 0 0]);
         base;
                
     end
     
-    methods%% Class for UR3 robot simulation
-        function self = UR3(base)
+    methods%% Class for Dobot robot simulation
+        function self = Dobot(base)
             if nargin < 1
                 base = transl(0, 0, 0);
             end
@@ -23,25 +23,25 @@ classdef UR3 < handle
     
         self.base = base;
         % robot = 
-        self.GetUR3Robot();
+        self.GetDobotRobot();
         self.PlotAndColourRobot();
+        self.GetLims();
       
         end
 
-        %% GetUR3Robot
-        % Given a name (optional), create and return a UR3 robot model
-        function GetUR3Robot(self)
+        %% GetDobotRobot
+        % Given a name (optional), create and return a Dobot robot model
+        function GetDobotRobot(self)
         %     if nargin < 1
                 % Create a unique name (ms timestamp after 1ms pause)
                 pause(0.001);
-                name = ['UR_3_', datestr(now, 'yyyymmddTHHMMSSFFF')];
+                name = ['Dobot', datestr(now, 'yyyymmddTHHMMSSFFF')];
         %     end
-            L(1) = Link('d', 0.1519, 'a', 0, 'alpha', -pi/2, 'offset', 0, 'qlim', [-2*pi 2*pi]);
-            L(2) = Link('d', 0, 'a', -0.24365, 'alpha', -pi,'offset', pi, 'qlim', [-190*pi/180,10*pi/180]);
-            L(3) = Link('d', 0, 'a', -0.21325, 'alpha', pi, 'offset', 0, 'qlim', [-150*pi/180,150*pi/180]);
-            L(4) = Link('d', 0.11235, 'a', 0, 'alpha', -pi/2, 'offset', pi, 'qlim', [-2*pi 2*pi]);
-            L(5) = Link('d', 0.08535, 'a', 0, 'alpha', pi/2, 'offset', 0, 'qlim', [-2*pi 2*pi]);
-            L(6) = Link('d', 0.0819, 'a', 0, 'alpha', 0, 'offset', 0, 'qlim', [-2*pi 2*pi]);
+            L(1) = Link('d', 0.138, 'a', 0, 'alpha', -pi/2, 'offset', 0,'qlim',[-135*pi/180 135*pi/180]);
+            L(2) = Link('d', 0, 'a', 0.135, 'alpha',0,'offset', -pi/2,'qlim',[5*pi/180 80*pi/180]);
+            L(3) = Link('d', 0, 'a', 0.147, 'alpha', pi, 'offset',0,'qlim',[-5*pi/180 85*pi/180]);
+            L(4) = Link('d', 0, 'a', 0.041, 'alpha', pi/2, 'offset', 0,'qlim',[-pi/2 pi/2]);
+            L(5) = Link('d', 0.09, 'a', 0, 'alpha',0, 'offset', 0,'qlim',[-85*pi/180 85*pi/180]);
             self.model = SerialLink(L, 'name', name, 'base', self.base);
            end
         %% PlotAndColourRobot
@@ -49,11 +49,7 @@ classdef UR3 < handle
         % colour them in if data is available 
         function PlotAndColourRobot(self)%robot,workspace)
             for linkIndex = 0:self.model.n
-                if self.useGripper && linkIndex == self.model.n
-                    [ faceData, vertexData, plyData{linkIndex + 1} ] = plyread(['UR3Link', num2str(linkIndex), 'Gripper.ply'], 'tri'); %#ok<AGROW>
-                else
-                    [ faceData, vertexData, plyData{linkIndex + 1} ] = plyread(['UR3Link', num2str(linkIndex), '.ply'], 'tri'); %#ok<AGROW>
-                end
+                [ faceData, vertexData, plyData{linkIndex + 1} ] = plyread(['DobotLink', num2str(linkIndex), '.ply'], 'tri'); %#ok<AGROW>
                 self.model.faces{linkIndex + 1} = faceData;
                 self.model.points{linkIndex + 1} = vertexData;
             end
@@ -80,6 +76,26 @@ classdef UR3 < handle
                 end
             end
         end
+
+        function GetLims(self)
+            qlim = self.model.qlim;
+            qlim(2,:) = [5*pi/180 80*pi/180];
+            qlim(3,:) = [5*pi/180 85*pi/180];
+ 
+            lowerLimit = [];
+            upperLimit = [];
+             for q2 = qlim(2,1):0.01:qlim(2,2)
+                 for theta3 = qlim(3,1):0.01:qlim(3,2)+0.01
+                     q3 = pi/2 - q2 + theta3;
+                     if theta3 <= qlim(3,1)
+                        lowerLimit = [lowerLimit;q2,q3]; %#ok<AGROW>
+                     elseif qlim(3,2) <= theta3
+                        upperLimit = [upperLimit;q2,q3]; %#ok<AGROW>
+                     end
+                 end
+             end
+
+        end 
         
     end
 end
